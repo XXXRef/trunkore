@@ -1,0 +1,25 @@
+#Ignore all but folders
+*
+!*/
+
+#Dont ignore EXT folders
+!**/EXT/*
+
+#Dont ignore src files
+!*.c
+!*.cx
+!*.cxx
+!*.cpp
+
+#Dont ignore header files
+!*.h
+!*.hx
+!*.hxx
+!*.hpp
+
+#Dont ignore build files
+!CMakeLists*
+
+!.gitignore
+
+!README.md
