@@ -2,7 +2,7 @@
 *
 !*/
 
-#Dont ignore EXT folders
+#Dont ignore EXT folders contents
 !**/EXT/*
 
 #Dont ignore src files
@@ -16,6 +16,11 @@
 !*.hx
 !*.hxx
 !*.hpp
+
+#Ignore build stuff
+**/build
+**/BUILD
+**/cmake-build*
 
 #Dont ignore build files
 !CMakeLists*
