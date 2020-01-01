@@ -8,21 +8,29 @@
 //include common platform-specific headers
 #if defined PLATFORM_WINDOWS
 	#include <windows.h>
+	#include "ModuleContainer/winmodulecontainer.hpp"
+#elif defined PLATFORM_NIX
+//TODO
+#endif
+
+namespace config {
+	namespace platform {
+#if defined PLATFORM_WINDOWS
+		using TYPE_FILESYSTEMPATH = LPCWSTR;
+		using TYPE_FUNCNAME = LPCSTR;
+#elif defined PLATFORM_NIX
+		//TODO
+#endif
+	}
+
+	using TYPE_JOBID = std::string;
+	using TYPE_JOBMODID = platform::TYPE_FILESYSTEMPATH;
+
+#if defined PLATFORM_WINDOWS
+	using TYPE_MODULECONTAINER = CWinModuleContainer;
 #elif defined PLATFORM_NIX
 	//TODO
 #endif
-
-namespace config{
-	namespace platform {
-		#if defined PLATFORM_WINDOWS
-			using TYPE_JOBMODID = LPCWSTR;
-			using TYPE_FUNCNAME = LPCSTR;
-		#elif defined PLATFORM_NIX
-			//TODO
-		#endif
-	}
-
-	using TYPE_JOBID=std::string;
 
 	extern std::string getJobFunctionName;
 }
