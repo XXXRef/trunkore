@@ -1,5 +1,5 @@
-#ifndef HEADER_I_MODULEMANAGER
-#define HEADER_I_MODULEMANAGER
+#ifndef HEADER_I_MODULECONTAINER
+#define HEADER_I_MODULECONTAINER
 
 #include <string>
 
@@ -8,39 +8,37 @@
 #include "utils.hpp"
 #include "types.hpp"
 
+
+
 //====================================================================================================
 /**
 	Particular module container class
 */
-class IModuleManager {
+class IModuleContainer {
 public:
 	using TYPE_FUNCNAME=config::platform::TYPE_FUNCNAME;
-	using TYPE_JOBMODID = config::platform::TYPE_JOBMODID;
+	using TYPE_JOBMODID = config::TYPE_JOBMODID;
 
 	virtual void loadModule(const TYPE_JOBMODID &) = 0;
 	virtual void unloadModule() = 0;
 	virtual TYPE_SIZE getFunctionAddress(const TYPE_FUNCNAME &)=0;
-	virtual ~IModuleManager() {}
-//Exceptions
-	//Module manager common exception class to handle them in platform independent manner
-	class ExModuleManager : public ExEx {};
+	virtual ~IModuleContainer() {}
 };
 
 //====================================================================================================
 /**
 	Particular module container class using RAII-concept
 */
-class IModuleManagerRAII {
+class IModuleContainerRAII {
 public:
 	using TYPE_FUNCNAME = config::platform::TYPE_FUNCNAME;
 
 	virtual TYPE_SIZE getFunctionAddress(const TYPE_FUNCNAME &) = 0;
-	virtual ~IModuleManagerRAII() {}
-//Exceptions
-	class ExModuleManagerRAII : public ExEx {};
+	virtual ~IModuleContainerRAII() {}
 };
 
-//TODO Think about common module manager exception which will be used by both RAII and non-RAII versions
-class ExModuleManager : public ExEx {};
-
+// Module container exception class
+//====================================================================================================
+class ExModuleContainer : public ExEx {};//WARNING ExModuleContainer not in scope of IModuleContainer/IModuleContainerRAII
+//TODO Mb IModuleContainer/IModuleContainerRAII/ExModuleContainer in one namespace, and then "using IModuleContainer,using IModuleContainer" to keep exception class more "scoped"
 #endif
