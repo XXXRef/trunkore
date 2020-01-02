@@ -44,8 +44,8 @@ void CJobsPlatform::addJob(const TYPE_JOBID &jobID, const TYPE_JOBMODID &jobModI
 	}
 
 // Get jobowner
-	auto jobManager = pfnGetJob(jobConfigID);
-	if (jobManager == nullptr) {
+	auto pJobManagerObj = std::make_shared<decltype(*pfnGetJob(jobConfigID))>(pfnGetJob(jobConfigID));
+	if (pJobManagerObj == nullptr) {
 		this->modulesManager.unloadModule(jobModID);
 		throw ExJobsPlatform("Cant get job manager object");
 	}
@@ -54,7 +54,7 @@ void CJobsPlatform::addJob(const TYPE_JOBID &jobID, const TYPE_JOBMODID &jobModI
 	this->jobsNlibs.insert({ jobID,jobModID });
 
 // Create job
-	this->jobsMgr.addJob(jobID, jobManager); // No need for handling exceptions cos checking for name duplication is already done in the beginning
+	this->jobsMgr.addJob(jobID, pJobManagerObj);
 }
 
 //====================================================================================================
@@ -63,8 +63,8 @@ void CJobsPlatform::removeJob(const TYPE_JOBID& jobID){
 	try{
 		this->jobsMgr.removeJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){//TODO change on CJobsManager::ExJobsManager exception
-		throw ExJobsPlatform("No jobs found");
+	catch (CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job removing failed: ") + e.getInfo());
 	}
 // Unload / decrement use_amount of job module
 	auto iter = this->jobsNlibs.find(jobID); //if no exceptions jobsMgr business => jobID guaranteed to be in jobsNlibs => no checking for existence of job needed
@@ -78,8 +78,8 @@ void CJobsPlatform::initJob(const TYPE_JOBID& jobID){
 	try{
 		this->jobsMgr.initJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){//TODO change on CJobsManager::ExJobsManager exception
-		throw ExJobsPlatform("No jobs found");
+	catch (CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job initialization failed: ")+e.getInfo());
 	}
 }
 
@@ -88,8 +88,8 @@ void CJobsPlatform::deinitJob(const TYPE_JOBID& jobID){
 	try{
 		this->jobsMgr.deinitJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){//TODO change on CJobsManager::ExJobsManager exception
-		throw ExJobsPlatform("No jobs found");
+	catch (CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job deinitialization failed: ") + e.getInfo());
 	}
 }
 
@@ -98,8 +98,8 @@ void CJobsPlatform::playJob(const TYPE_JOBID& jobID){
 	try{
 		this->jobsMgr.playJob(jobID);
 	}
-	catch (const CJobsManager::ExNoSuchJob& e){//TODO change on CJobsManager::ExJobsManager exception
-		throw ExJobsPlatform("No jobs found");
+	catch (const CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job playing failed: ") + e.getInfo());
 	}
 	catch (const IJobOwner::ExInvalidCommandSequence& e){
 		//std::cout << "CJobsPlatform::playJob ERROR: job state prevents playing it" << std::endl;
@@ -112,10 +112,10 @@ void CJobsPlatform::stopJob(const TYPE_JOBID& jobID){
 	try{
 		this->jobsMgr.stopJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){//TODO change on CJobsManager::ExJobsManager exception
-		throw ExJobsPlatform("No jobs found");
+	catch (const CJobsManager::ExJobsManager &e) {
+		throw ExJobsPlatform(std::string("Job stopping failed: ") + e.getInfo());
 	}
-	catch (const IJobOwner::ExJobAlreadyEnded& e){
+	catch (const IJobOwner::ExJobAlreadyEnded &e){
 		//std::cout << "CJobsPlatform::stopJob ERROR: job already ended" << std::endl;
 		throw ExJobsPlatform(std::string("Stopping job failed: ") + e.what());//TODO remove what() when IJobOwner::ExInvalidCommandSequence will be reworked
 	}
@@ -133,8 +133,8 @@ IJobOwner::EExecState CJobsPlatform::getJobState(const TYPE_JOBID& jobID){
 	try{
 		this->jobsMgr.getJobState(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){//TODO change on CJobsManager::ExJobsManager exception
-		throw ExJobsPlatform("No jobs found");
+	catch (const CJobsManager::ExJobsManager & e) {
+		throw ExJobsPlatform(std::string("Acquiring job state failed: ") + e.getInfo());
 	}
 }
 
