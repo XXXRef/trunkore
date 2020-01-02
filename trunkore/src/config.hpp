@@ -25,6 +25,7 @@ namespace config {
 
 	using TYPE_JOBID = std::string;
 	using TYPE_JOBMODID = platform::TYPE_FILESYSTEMPATH;
+	using TYPE_JOBCONFIGID = platform::TYPE_FILESYSTEMPATH;
 
 #if defined PLATFORM_WINDOWS
 	using TYPE_MODULECONTAINER = CWinModuleContainer;
@@ -32,7 +33,7 @@ namespace config {
 	//TODO
 #endif
 
-	extern std::string getJobFunctionName;
+	const platform::TYPE_FUNCNAME getJobFunctionName= "getJob";
 }
 
 #endif
