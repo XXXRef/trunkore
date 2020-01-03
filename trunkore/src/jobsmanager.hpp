@@ -7,40 +7,44 @@
 #include <memory>
 
 #include "i_jobowner.hpp"
+#include "utils.hpp"
 
-using TYPE_JOB_ID=std::string;
+#include "config.hpp"
 
 //====================================================================================================
 /**
 	Class implementing core jobs processing
 */
 class CJobsManager {
+public:
+	using TYPE_JOBID=config::TYPE_JOBID;
+
 protected:
 	/**
 		Map holding {JOB_ID:JobOwner_obj} association
 	*/
-	std::map<TYPE_JOB_ID, IJobOwner*> jobs; //TODO Map contains raw ptr. Why no smart pointer
+	std::map<TYPE_JOBID, std::shared_ptr<IJobOwner>> jobs;
 
 public:
 	//TODO Constructor?
 	virtual ~CJobsManager();
-	void addJob(const TYPE_JOB_ID& jobID, IJobOwner*);
-	void removeJob(const TYPE_JOB_ID& jobID);
-	void initJob(const TYPE_JOB_ID& jobID);
-	void deinitJob(const TYPE_JOB_ID& jobID);
-	void playJob(const TYPE_JOB_ID& jobID);
-	void stopJob(const TYPE_JOB_ID& jobID);
-	IJobOwner::EExecState getJobState(const TYPE_JOB_ID& jobID); //TODO const?
+	void addJob(const TYPE_JOBID& jobID, const std::shared_ptr<IJobOwner> &);
+	void removeJob(const TYPE_JOBID& jobID);
+	void initJob(const TYPE_JOBID& jobID);
+	void deinitJob(const TYPE_JOBID& jobID);
+	void playJob(const TYPE_JOBID& jobID);
+	void stopJob(const TYPE_JOBID& jobID);
+	IJobOwner::EExecState getJobState(const TYPE_JOBID &jobID); //TODO const?
 
 //Exceptions
-	/**
-		Occurs when there is attempt to add job with JOB_ID which already exists
-	*/
-	class ExDuplicateJobsNames : public std::exception {};
-	/**
-		Occurs when there is attempt to select job with JOB_ID which doesnt exist
-	*/
-	class ExNoSuchJob : public std::exception {};
+	class ExJobsManager : public ExEx {
+		std::string exInfo;
+
+	public:
+		ExJobsManager(const std::string& par_exInfo);
+
+		std::string getInfo() const override;
+	};
 };
 
 #endif
