@@ -27,7 +27,7 @@ void CJobsManager::removeJob(const TYPE_JOBID &jobID) {
 	try {
 		iter->second->onDeinit();//TODO why deinit while removing called?
 	}
-	catch (IJobOwner::ExInvalidCommandSequence& e) {//TODO change IJobOwner exception type when common IJobOwner exception type will be implemented
+	catch (IJobOwner::ExJobOwner &e) {
 		// Now its safe to remove job. Nothing to do.
 	}
 	// Remove job element
