@@ -44,7 +44,8 @@ void CJobsPlatform::addJob(const TYPE_JOBID &jobID, const TYPE_JOBMODID &jobModI
 	}
 
 // Get jobowner
-	auto pJobManagerObj = std::make_shared<decltype(*pfnGetJob(jobConfigID))>(pfnGetJob(jobConfigID));
+	//auto pJobManagerObj = std::make_shared<std::remove_reference<decltype(*pfnGetJob(jobConfigID))>::type>(pfnGetJob(jobConfigID));//lol im loving it
+	auto pJobManagerObj = std::make_shared<IJobOwner>(pfnGetJob(jobConfigID));
 	if (pJobManagerObj == nullptr) {
 		this->modulesManager.unloadModule(jobModID);
 		throw ExJobsPlatform("Cant get job manager object");
