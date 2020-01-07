@@ -15,7 +15,7 @@ bool IJobOwner::checkIfStopRequested() { //For users
 //=====================================================================================================================
 void IJobOwner::playWrapper() {
 	auto playResult = this->play();
-	if (EPlayResult::RESULT_ENDED==playResult) this->executionState.set(EExecState::ENDED);
+	if (EPlayResult::RESULT_ENDED == playResult) this->executionState.set(EExecState::ENDED);
 	else {//EPlayResult::RESULT_STOPPED
 		this->flagIfStopRequested.set(false);
 		this->executionState.set(EExecState::STOPPED);
@@ -72,16 +72,16 @@ void IJobOwner::onStop() {
 }
 
 //=====================================================================================================================
-EExecState IJobOwner::getExecutionState() inline {
+auto IJobOwner::getExecutionState() -> EExecState {
 	return this->executionState.get();
 }
 
 
 //Exceptions
 //====================================================================================================
-IJobOwner::ExJobOwner::ExJobOwner(const std::string& par_exInfo) inline: exInfo(par_exInfo) {}
+IJobOwner::ExJobOwner::ExJobOwner(const std::string & par_exInfo) : exInfo(par_exInfo) {}
 
 //====================================================================================================
-std::string IJobOwner::ExJobOwner::getInfo() const inline {
+std::string IJobOwner::ExJobOwner::getInfo() const {
 	return std::string("[CJobsManager EXCEPTION] ") + this->exInfo;
 }

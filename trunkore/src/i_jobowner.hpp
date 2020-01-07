@@ -7,6 +7,7 @@
 #include <exception>
 
 #include "types.hpp"
+#include "utils.hpp"
 
 //=====================================================================================================================
 template<class T> class CSharedVar {
@@ -15,7 +16,7 @@ protected:
 	std::mutex m;
 
 public:
-	CSharedVar(const T &obj = T{}) : var(obj) {}//TODO noexcept?
+	CSharedVar(const T& obj = T{}) : var(obj) {}//TODO noexcept?
 	//TODO take care bout copy-control members
 	virtual ~CSharedVar() {}
 
@@ -42,9 +43,9 @@ public:
 		\brief Set of all possible job states
 	*/
 	enum EExecState { VANILLA, INITIALIZED, PLAYING, STOPPED, ENDED, DEINITIALIZED, INTERRUPTED };
-	
+
 protected:
-	enum EPlayResult {RESULT_STOPPED, RESULT_ENDED, RESULT_INTERRUPTED};
+	enum EPlayResult { RESULT_STOPPED, RESULT_ENDED, RESULT_INTERRUPTED };
 	CSharedVar<EExecState> executionState = EExecState::VANILLA;
 	CSharedVar<bool> flagIfStopRequested = false; //TODO almost surely standard library implementations of this functionality exists //TODO in-body initializations ???
 	std::mutex stateMutex;
@@ -67,7 +68,7 @@ public:
 	virtual EPlayResult play() = 0;
 
 
-//Exceptions
+	//Exceptions
 	class ExJobOwner : public ExEx {
 		std::string exInfo;
 	public:
