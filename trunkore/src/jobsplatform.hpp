@@ -35,22 +35,22 @@ private:
 	CJobsManager jobsMgr;
 
 public:
-//Interface
+	//Interface
 	virtual ~CJobsPlatform();
-	void CJobsPlatform::addJob(const TYPE_JOBID &, const TYPE_JOBMODID &, const TYPE_JOBCONFIGID &);
-	void CJobsPlatform::removeJob(const TYPE_JOBID &);
-	void CJobsPlatform::initJob(const TYPE_JOBID &);
-	void CJobsPlatform::deinitJob(const TYPE_JOBID &);
-	void CJobsPlatform::playJob(const TYPE_JOBID &);
-	void CJobsPlatform::stopJob(const TYPE_JOBID &);
+	void addJob(const TYPE_JOBID &, const TYPE_JOBMODID&, const TYPE_JOBCONFIGID &);
+	void removeJob(const TYPE_JOBID &);
+	void initJob(const TYPE_JOBID &);
+	void deinitJob(const TYPE_JOBID &);
+	void playJob(const TYPE_JOBID &);
+	void stopJob(const TYPE_JOBID &);
 	IJobOwner::EExecState getJobState(const TYPE_JOBID &); //TODO const?
 	std::vector<TYPE_JOBID> getJobsIDs(); //TODO const?
 
 //Types
-	class ExJobsPlatform: public ExEx {
+	class ExJobsPlatform : public ExEx {
 		std::string exInfo;
 	public:
-		ExJobsPlatform(const std::string& par_exInfo);
+		ExJobsPlatform(const std::string &par_exInfo);
 
 		std::string getInfo() const override;
 	};
