@@ -3,12 +3,9 @@
 
 #include <string>
 
-#include "types.hpp"
-
 //include common platform-specific headers
 #if defined PLATFORM_WINDOWS
-	#include <windows.h>
-	#include "ModuleContainer/winmodulecontainer.hpp"
+#include <windows.h>
 #elif defined PLATFORM_NIX
 //TODO
 #endif
@@ -23,17 +20,20 @@ namespace config {
 #endif
 	}
 
-	using TYPE_JOBID = std::string;
+	using TYPE_JOBID = std::wstring;
 	using TYPE_JOBMODID = platform::TYPE_FILESYSTEMPATH;
 	using TYPE_JOBCONFIGID = platform::TYPE_FILESYSTEMPATH;
 
-#if defined PLATFORM_WINDOWS
-	using TYPE_MODULECONTAINER = CWinModuleContainer;
-#elif defined PLATFORM_NIX
-	//TODO
-#endif
+	/*
+	//WARNING Include loop config.hpp-i_modulecontainer.hpp-<platform>modulecontainer.hpp
+	#if defined PLATFORM_WINDOWS
+		using TYPE_MODULECONTAINER = CWinModuleContainer;
+	#elif defined PLATFORM_NIX
+		//TODO
+	#endif
+	*/
 
-	const platform::TYPE_FUNCNAME getJobFunctionName= "getJob";
+	const platform::TYPE_FUNCNAME getJobFunctionName = "getJob";
 }
 
 #endif
