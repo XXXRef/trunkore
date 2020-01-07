@@ -13,11 +13,23 @@
 
 #include "config.hpp"
 
+//TODO Cos of include loop this config part must be here
+
+#if defined PLATFORM_WINDOWS
+#include "ModuleContainer/winmodulecontainer.hpp"
+namespace config {
+	using TYPE_MODULECONTAINER = CWinModuleContainer;
+#elif defined PLATFORM_NIX
+namespace config {
+	//TODO
+#endif
+}
+
 //====================================================================================================
 /**
 	\brief Handles job modules
 
-	ModulesContainer class is intentionally platform-independent. All platform-specific business is done in appropriate ModuleManager classes
+	ModulesContainer class is intentionally platform-independent. All platform-specific business is done in appropriate ModuleContainer classes
 */
 class CModulesManager {
 public: // public types
@@ -34,19 +46,19 @@ public:
 	/**
 		Loads module if its not done yet; if module already loaded, increments its refs amount
 	*/
-	void loadModule(const TYPE_JOBMODID &);
+	void loadModule(const TYPE_JOBMODID&);
 	/**
 		Decrements module refs amount and unloads it if amount becomes 0
 	*/
-	void unloadModule(const TYPE_JOBMODID &);
+	void unloadModule(const TYPE_JOBMODID&);
 
-	std::shared_ptr<IModuleContainer> operator[](const TYPE_JOBMODID &) const;
+	std::shared_ptr<IModuleContainer> operator[](const TYPE_JOBMODID&) const;
 
-//Exceptions
+	//Exceptions
 	class ExModulesManager : public ExEx { //TODO Rename of ExModulesContainer
 		std::string exInfo;
 	public:
-		ExModulesManager(const std::string &par_exInfo);
+		ExModulesManager(const std::string& par_exInfo);
 
 		std::string getInfo() const override;
 	};

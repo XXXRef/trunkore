@@ -3,25 +3,23 @@
 
 #include <string>
 
-#include "config.hpp"
-
 #include "utils.hpp"
 #include "types.hpp"
-
-
+#include "config.hpp"
 
 //====================================================================================================
 /**
 	Particular module container class
 */
+
 class IModuleContainer {
 public:
-	using TYPE_FUNCNAME=config::platform::TYPE_FUNCNAME;
+	using TYPE_FUNCNAME = config::platform::TYPE_FUNCNAME;
 	using TYPE_JOBMODID = config::TYPE_JOBMODID;
 
 	virtual void loadModule(const TYPE_JOBMODID &) = 0;
 	virtual void unloadModule() = 0;
-	virtual TYPE_SIZE getFunctionAddress(const TYPE_FUNCNAME &)=0;
+	virtual TYPE_SIZE getFunctionAddress(const TYPE_FUNCNAME &) = 0;
 	virtual ~IModuleContainer() {}
 };
 
