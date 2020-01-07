@@ -12,14 +12,14 @@ CWinModuleContainer::CWinModuleContainer(const LPCWSTR &modulePath): hModule(NUL
 //====================================================================================================
 void CWinModuleContainer::loadModule(const LPCWSTR &modulePath) {
 	this->unloadModule();
-	auto hModule = LoadLibrary(static_cast<LPCTSTR>(modulePath));
+	auto hModule = LoadLibrary(reinterpret_cast<LPCTSTR>(modulePath));
 	if (NULL == hModule) throw ExWinModuleContainer("Failed to load library");
 	this->hModule = hModule;
 }
 
 //====================================================================================================
 void CWinModuleContainer::unloadModule() {
-	if (NULL == this->hModule ) return;
+	if (NULL == this->hModule) return;
 	FreeLibrary(this->hModule);
 	this->hModule = NULL;
 }
@@ -46,7 +46,7 @@ CWinModuleContainer::~CWinModuleContainer() {
 //CWinModuleContainerRAII
 //====================================================================================================
 CWinModuleContainerRAII::CWinModuleContainerRAII(const LPCWSTR &modulePath) {
-	auto hModule = LoadLibrary(static_cast<LPCTSTR>(modulePath));
+	auto hModule = LoadLibrary(reinterpret_cast<LPCTSTR>(modulePath));
 	if (NULL == hModule) throw ExWinModuleContainer("Failed to load library");
 	this->hModule = hModule;
 }
@@ -71,7 +71,7 @@ CWinModuleContainerRAII::~CWinModuleContainerRAII() {
 
 //Exceptions
 //====================================================================================================
-ExWinModuleContainer::ExWinModuleContainer(const std::string& par_msg) :_msg(par_msg), _errorCode(GetLastError()) {}
+ExWinModuleContainer::ExWinModuleContainer(const std::string & par_msg): _msg(par_msg), _errorCode(GetLastError()) {}
 
 std::string ExWinModuleContainer::getInfo() const {
 	return std::string("[CWinModuleContainer EXCEPTION] ") + _msg + " err_code:" + std::to_string(_errorCode); //TODO is std::to_string necessary?
