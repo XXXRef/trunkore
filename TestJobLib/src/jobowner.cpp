@@ -4,36 +4,40 @@
 
 #include <string>
 
-CJobOwner::CJobOwner(const std::string& par_id) : id(par_id){
-	blog::addEndpoint(std::string("TestJobLib_") + this->id + ".log", std::string("logfile_") + this->id);
-	this->logger.addEndpoint(std::string("logfile_")+this->id);
+CJobOwner::CJobOwner(const LPCWSTR &par_id){
+	this->hLogFile=CreateFile(reinterpret_cast<LPCSTR>(par_id), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+}
+
+CJobOwner::~CJobOwner() {
+	CloseHandle(this->hLogFile);
 }
 
 void CJobOwner::init(){
 	std::size_t secsToSleep = 3;
-	this->logger.log("START CJobOwner::init");
+	DWORD numBytesWritten=0;
+	WriteFile(this->hLogFile, "START CJobOwner::init", std::strlen("START CJobOwner::init"), &numBytesWritten, nullptr);
 	this->jobState = EJobState::VANILLA;
-	//this->logger.log(std::string("\tSleeping for ")+std::to_string(secsToSleep)+" secs ...");
-	//Sleep(secsToSleep*1000);
-	this->logger.log("END CJobOwner::init");
+	WriteFile(this->hLogFile, "END CJobOwner::init", std::strlen("END CJobOwner::init"), &numBytesWritten, nullptr);
 }
 
 void CJobOwner::deinit(){
 	std::size_t secsToSleep = 3;
-	this->logger.log("START CJobOwner::deinit");
+	DWORD numBytesWritten = 0;
+	WriteFile(this->hLogFile, "START CJobOwner::deinit", std::strlen("START CJobOwner::deinit"), &numBytesWritten, nullptr);
 	//this->logger.log(std::string("\tSleeping for ") + std::to_string(secsToSleep) + " secs ...");
 	//Sleep(secsToSleep * 1000);
-	this->logger.log("END CJobOwner::deinit");
+	WriteFile(this->hLogFile, "END CJobOwner::deinit", std::strlen("END CJobOwner::deinit"), &numBytesWritten, nullptr);
 }
 
 CJobOwner::EPlayResult CJobOwner::play(){
+	DWORD numBytesWritten = 0;
 	switch (this->jobState){
 	case EJobState::VANILLA:
 		if (this->flagIfStopRequested.get()){
 			return EPlayResult::RESULT_STOPPED;
 		}
 		Sleep(2000);
-		this->logger.log("VANILLA done");
+		WriteFile(this->hLogFile, "VANILLA done", std::strlen("VANILLA done"), &numBytesWritten, nullptr);
 		this->jobState = EJobState::STEP1;
 
 	case EJobState::STEP1:
@@ -41,7 +45,7 @@ CJobOwner::EPlayResult CJobOwner::play(){
 			return EPlayResult::RESULT_STOPPED;
 		}
 		Sleep(2000);
-		this->logger.log("STEP1 done");
+		WriteFile(this->hLogFile, "STEP1 done", std::strlen("STEP1 done"), &numBytesWritten, nullptr);
 		this->jobState = EJobState::STEP2;
 
 	case EJobState::STEP2:
@@ -49,7 +53,7 @@ CJobOwner::EPlayResult CJobOwner::play(){
 			return EPlayResult::RESULT_STOPPED;
 		}
 		Sleep(2000);
-		this->logger.log("STEP2 done");
+		WriteFile(this->hLogFile, "STEP2 done", std::strlen("STEP2 done"), &numBytesWritten, nullptr);
 		this->jobState = EJobState::STEP3;
 
 	case EJobState::STEP3:
@@ -57,7 +61,7 @@ CJobOwner::EPlayResult CJobOwner::play(){
 			return EPlayResult::RESULT_STOPPED;
 		}
 		Sleep(2000);
-		this->logger.log("STEP3 done");
+		WriteFile(this->hLogFile, "STEP3 done", std::strlen("STEP3 done"), &numBytesWritten, nullptr);
 		this->jobState = EJobState::STEP4;
 
 	case EJobState::STEP4:
@@ -65,7 +69,7 @@ CJobOwner::EPlayResult CJobOwner::play(){
 			return EPlayResult::RESULT_STOPPED;
 		}
 		Sleep(2000);
-		this->logger.log("STEP4 done");
+		WriteFile(this->hLogFile, "STEP4 done", std::strlen("STEP4 done"), &numBytesWritten, nullptr);
 		this->jobState = EJobState::STEP5;
 	}
 	return EPlayResult::RESULT_ENDED;
