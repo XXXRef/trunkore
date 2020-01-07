@@ -18,6 +18,6 @@ add_compile_definitions(${PLATFORM_ID})
 
 include_directories(./src)
 
-file(GLOB SRC_FILES ./src/*.cpp ./src/ModuleManager/*.cpp)
+file(GLOB SRC_FILES ./src/*.cpp ./src/ModuleContainer/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})

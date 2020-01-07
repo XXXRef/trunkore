@@ -14,137 +14,137 @@
 //====================================================================================================
 CJobsPlatform::~CJobsPlatform() {
 	// Stop all remaining jobs
-	auto jobsNames = this->getJobsNames();
-	for (const auto& e: jobsNames){
+	auto jobsIDs = this->getJobsIDs();
+	for (const auto& e: jobsIDs){
 		this->removeJob(e);
 	}
 }
 
 //====================================================================================================
-void CJobsPlatform::addJob(const std::string& jobName, const std::string& jobLibPath, const std::string& jobConfigPath) {
-// Check for duplicate
-	if (this->jobsNlibs.find(jobName) != this->jobsNlibs.cend()) {
-		throw ExDuplicateJobs();
-	}
+void CJobsPlatform::addJob(const TYPE_JOBID &jobID, const TYPE_JOBMODID &jobModID, const TYPE_JOBCONFIGID &jobConfigID) {
+// Check if duplicate
+	if (this->jobsNlibs.find(jobID) != this->jobsNlibs.cend()) throw ExJobsPlatform("Adding job failed: job with this jobID already exists");
+
 // Load job library
 	try {
-		this->modulesContainer.loadModule(jobLibPath);
+		this->modulesManager.loadModule(jobModID);
 	}
-	catch (const ExEx& e) {
-		std::cout << "[ERROR]: " << "Exception while loading module occurred: " << e.getInfo() << std::endl;
-		//TODO thow CJobPlatform exception
-		return;
+	catch (const CModulesManager::ExModulesManager & e) {
+		throw ExJobsPlatform(std::string("ModulesManager module loading failed: ")+e.getInfo());
 	}
 
 // Get job factory function
-	IJobOwner*(*pfnGetJob)(const std::string&);
+	IJobOwner*(*pfnGetJob)(const TYPE_JOBCONFIGID&);
 	try {
-		pfnGetJob = (IJobOwner*(*)(const std::string&))this->modulesContainer[jobLibPath]->getFunctionAddress(config::getJobFunctionName);
+		pfnGetJob = reinterpret_cast<decltype(pfnGetJob)>(this->modulesManager[jobModID]->getFunctionAddress(config::getJobFunctionName));
 	}
-	catch (const ExEx& e) {
-		this->modulesContainer.unloadModule(jobLibPath);
-		std::cout << "[ERROR]: " << "Exception while loading module occurred: " << e.getInfo() << std::endl;
-		//TODO thow CJobPlatform exception
-		return;
+	catch (const ExModuleContainer &e) {
+		this->modulesManager.unloadModule(jobModID);
+		throw ExJobsPlatform(std::string("Get func address failed: ")+e.getInfo());
 	}
 
 // Get jobowner
-	auto jobManager = pfnGetJob(jobConfigPath);
-	if (jobManager == nullptr) {
-		this->modulesContainer.unloadModule(jobLibPath);
-		std::cout << "[ERROR]: " << "Cant get job manager object" << std::endl;
-		//TODO thow CJobPlatform exception
-		return;
+	//auto pJobManagerObj = std::make_shared<std::remove_reference<decltype(*pfnGetJob(jobConfigID))>::type>(pfnGetJob(jobConfigID));//lol im loving it
+	auto pJobManagerObj = std::make_shared<IJobOwner>(pfnGetJob(jobConfigID));
+	if (pJobManagerObj == nullptr) {
+		this->modulesManager.unloadModule(jobModID);
+		throw ExJobsPlatform("Cant get job manager object");
 	}
 
 // Insert new job element after job manager object successfully acquired
-	this->jobsNlibs.insert({ jobName,jobLibPath });
+	this->jobsNlibs.insert({ jobID,jobModID });
 
 // Create job
-	this->jobsMgr.addJob(jobName, jobManager); // No need for handling exceptions cos checking for name duplication is already done in the beginning
+	this->jobsMgr.addJob(jobID, pJobManagerObj);
 }
 
 //====================================================================================================
-void CJobsPlatform::removeJob(const std::string& jobName){
+void CJobsPlatform::removeJob(const TYPE_JOBID& jobID){
 // Delete job
 	try{
-		this->jobsMgr.removeJob(jobName);
+		this->jobsMgr.removeJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){
-		throw CJobsPlatform::ExNoJobFound();
+	catch (CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job removing failed: ") + e.getInfo());
 	}
 // Unload / decrement use_amount of job module
-	auto iter = this->jobsNlibs.find(jobName);
-	this->modulesContainer.unloadModule(iter->second);
+	auto iter = this->jobsNlibs.find(jobID); //if no exceptions jobsMgr business => jobID guaranteed to be in jobsNlibs => no checking for existence of job needed
+	this->modulesManager.unloadModule(iter->second);
 // Remove appropriate element from this->jobsNlibs
 	this->jobsNlibs.erase(iter);
 }
 
 //====================================================================================================
-void CJobsPlatform::initJob(const std::string& jobName){
+void CJobsPlatform::initJob(const TYPE_JOBID& jobID){
 	try{
-		this->jobsMgr.initJob(jobName);
+		this->jobsMgr.initJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){
-		throw CJobsPlatform::ExNoJobFound();
+	catch (CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job initialization failed: ")+e.getInfo());
 	}
 }
 
 //====================================================================================================
-void CJobsPlatform::deinitJob(const std::string& jobName){
+void CJobsPlatform::deinitJob(const TYPE_JOBID& jobID){
 	try{
-		this->jobsMgr.deinitJob(jobName);
+		this->jobsMgr.deinitJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){
-		throw CJobsPlatform::ExNoJobFound();
+	catch (CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job deinitialization failed: ") + e.getInfo());
 	}
 }
 
 //====================================================================================================
-void CJobsPlatform::playJob(const std::string& jobName){
+void CJobsPlatform::playJob(const TYPE_JOBID& jobID){
 	try{
-		this->jobsMgr.playJob(jobName);
+		this->jobsMgr.playJob(jobID);
 	}
-	catch (const CJobsManager::ExNoSuchJob& e){
-		throw CJobsPlatform::ExNoJobFound();
+	catch (const CJobsManager::ExJobsManager &e){
+		throw ExJobsPlatform(std::string("Job playing failed: ") + e.getInfo());
 	}
 	catch (const IJobOwner::ExInvalidCommandSequence& e){
-		std::cout << "CJobsPlatform::playJob ERROR: job state prevents playing it" << std::endl;
-		//TODO thow CJobPlatform exception
-		return;
+		//std::cout << "CJobsPlatform::playJob ERROR: job state prevents playing it" << std::endl;
+		throw ExJobsPlatform(std::string("Playing job failed: ") + e.what());//TODO remove what() when IJobOwner::ExInvalidCommandSequence will be reworked
 	}
 }
 
 //====================================================================================================
-void CJobsPlatform::stopJob(const std::string& jobName){
+void CJobsPlatform::stopJob(const TYPE_JOBID& jobID){
 	try{
-		this->jobsMgr.stopJob(jobName);
+		this->jobsMgr.stopJob(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){
-		throw CJobsPlatform::ExNoJobFound();
+	catch (const CJobsManager::ExJobsManager &e) {
+		throw ExJobsPlatform(std::string("Job stopping failed: ") + e.getInfo());
 	}
-	catch (const IJobOwner::ExJobAlreadyEnded& e){
-		std::cout << "CJobsPlatform::stopJob ERROR: job already ended" << std::endl;
-		//TODO thow CJobPlatform exception
-		return;
+	catch (const IJobOwner::ExJobAlreadyEnded &e){
+		//std::cout << "CJobsPlatform::stopJob ERROR: job already ended" << std::endl;
+		throw ExJobsPlatform(std::string("Stopping job failed: ") + e.what());//TODO remove what() when IJobOwner::ExInvalidCommandSequence will be reworked
 	}
 }
 
 //====================================================================================================
-std::vector<std::string> CJobsPlatform::getJobsNames() {
-	std::vector<std::string> jobsNames;
-	for (const auto& e: this->jobsNlibs) {
-		jobsNames.push_back(e.first);
-	}
-	return jobsNames;
+auto CJobsPlatform::getJobsIDs() -> std::vector<TYPE_JOBID> {
+	std::vector<decltype(this->jobsNlibs)::key_type> jobsIDs(this->jobsNlibs.size());
+	for (const auto& e: this->jobsNlibs) jobsIDs.push_back(e.first);
+	return jobsIDs;
 }
 
 //====================================================================================================
-IJobOwner::EExecState CJobsPlatform::getJobState(const std::string& jobName){
+IJobOwner::EExecState CJobsPlatform::getJobState(const TYPE_JOBID& jobID){
 	try{
-		this->jobsMgr.getJobState(jobName);
+		this->jobsMgr.getJobState(jobID);
 	}
-	catch (CJobsManager::ExNoSuchJob){
-		throw CJobsPlatform::ExNoJobFound();
+	catch (const CJobsManager::ExJobsManager & e) {
+		throw ExJobsPlatform(std::string("Acquiring job state failed: ") + e.getInfo());
 	}
+}
+
+
+//CJobsPlatform::ExJobsPlatform
+//====================================================================================================
+CJobsPlatform::ExJobsPlatform::ExJobsPlatform(const std::string& par_exInfo) inline: exInfo(par_exInfo) {}
+
+//====================================================================================================
+std::string CJobsPlatform::ExJobsPlatform::getInfo() const inline {
+	return std::string("[CJobsPlatform EXCEPTION] ") + exInfo;
 }
