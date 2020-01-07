@@ -28,13 +28,13 @@ protected:
 public:
 	//TODO Constructor?
 	virtual ~CJobsManager();
-	void addJob(const TYPE_JOBID& jobID, const std::shared_ptr<IJobOwner> &);
+	void addJob(const TYPE_JOBID& jobID, const std::shared_ptr<IJobOwner>&);
 	void removeJob(const TYPE_JOBID& jobID);
 	void initJob(const TYPE_JOBID& jobID);
 	void deinitJob(const TYPE_JOBID& jobID);
 	void playJob(const TYPE_JOBID& jobID);
 	void stopJob(const TYPE_JOBID& jobID);
-	IJobOwner::EExecState getJobState(const TYPE_JOBID &jobID); //TODO const?
+	IJobOwner::EExecState getJobState(const TYPE_JOBID& jobID); //TODO const?
 
 //Exceptions
 	class ExJobsManager : public ExEx {
