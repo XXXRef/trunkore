@@ -13,14 +13,14 @@
 namespace config {
 	namespace platform {
 #if defined PLATFORM_WINDOWS
-		using TYPE_FILESYSTEMPATH = LPCWSTR;
+		using TYPE_FILESYSTEMPATH = LPCSTR;
 		using TYPE_FUNCNAME = LPCSTR;
 #elif defined PLATFORM_NIX
 		//TODO
 #endif
 	}
 
-	using TYPE_JOBID = std::wstring;
+	using TYPE_JOBID = std::string;
 	using TYPE_JOBMODID = platform::TYPE_FILESYSTEMPATH;
 	using TYPE_JOBCONFIGID = platform::TYPE_FILESYSTEMPATH;
 

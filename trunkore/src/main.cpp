@@ -10,30 +10,37 @@
 #include "config.hpp"
 
 #if defined PLATFORM_WINDOWS
-using MAINCFG_STRTYPE=std::wstring;
-#define MAINCFG_STD_IN_OBJ std::wcin
-#define MAINCFG_STD_OUT_OBJ std::wcout
-using STRSTREAM=std::wstringstream;
-//Commands
-#define MAINCFG_CMD_EXIT L"EXIT"
-#define MAINCFG_CMD_LS L"LS"
-#define MAINCFG_CMD_STATE L"STATE"
-#define MAINCFG_CMD_ADD L"ADD"
-#define MAINCFG_CMD_RM L"RM"
-#define MAINCFG_CMD_INIT L"INIT"
-#define MAINCFG_CMD_DEINIT L"DEINIT"
-#define MAINCFG_CMD_PLAY L"PLAY"
-#define MAINCFG_CMD_STOP L"STOP"
 /*
-//States
-#define MAINCFG_STATE_VANILLA L"VANILLA"
-#define MAINCFG_STATE_INITIALIZED L"INITIALIZED"
-#define MAINCFG_STATE_PLAYING L"PLAYING"
-#define MAINCFG_STATE_STOPPED L"STOPPED"
-#define MAINCFG_STATE_ENDED L"ENDED"
-#define MAINCFG_STATE_DEINITIALIZED L"DEINITIALIZED"
-#define MAINCFG_STATE_INTERRUPTED L"INTERRUPTED"
+	using MAINCFG_STRTYPE=std::wstring;
+	#define MAINCFG_STD_IN_OBJ std::wcin
+	#define MAINCFG_STD_OUT_OBJ std::wcout
+	using STRSTREAM=std::wstringstream;
+	//Commands
+	#define MAINCFG_CMD_EXIT L"EXIT"
+	#define MAINCFG_CMD_LS L"LS"
+	#define MAINCFG_CMD_STATE L"STATE"
+	#define MAINCFG_CMD_ADD L"ADD"
+	#define MAINCFG_CMD_RM L"RM"
+	#define MAINCFG_CMD_INIT L"INIT"
+	#define MAINCFG_CMD_DEINIT L"DEINIT"
+	#define MAINCFG_CMD_PLAY L"PLAY"
+	#define MAINCFG_CMD_STOP L"STOP"
 */
+using MAINCFG_STRTYPE=std::string;
+#define MAINCFG_STD_IN_OBJ std::cin
+#define MAINCFG_STD_OUT_OBJ std::cout
+using STRSTREAM=std::stringstream;
+//Commands
+#define MAINCFG_CMD_EXIT "EXIT"
+#define MAINCFG_CMD_LS "LS"
+#define MAINCFG_CMD_STATE "STATE"
+#define MAINCFG_CMD_ADD "ADD"
+#define MAINCFG_CMD_RM "RM"
+#define MAINCFG_CMD_INIT "INIT"
+#define MAINCFG_CMD_DEINIT "DEINIT"
+#define MAINCFG_CMD_PLAY "PLAY"
+#define MAINCFG_CMD_STOP "STOP"
+
 #elif defined PLATFORM_NIX
 using MAINCFG_STRTYPE=std::string;
 #define MAINCFG_STD_IN_OBJ std::cin
