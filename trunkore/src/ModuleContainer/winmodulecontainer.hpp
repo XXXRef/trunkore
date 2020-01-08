@@ -8,13 +8,13 @@
 #include <windows.h>
 
 //=====================================================================================================================
-class CWinModuleContainer:public IModuleContainer {
+class CWinModuleContainer: public IModuleContainer {
 	HMODULE hModule;
 
 public:
 	CWinModuleContainer();
-	CWinModuleContainer(const LPCWSTR &modulePath);
-	void loadModule(const LPCWSTR &modulePath) override;
+	CWinModuleContainer(const LPCSTR &modulePath);
+	void loadModule(const LPCSTR &modulePath) override;
 	void unloadModule() override;
 	TYPE_SIZE getFunctionAddress(const LPCSTR &functionExportName) override;
 	TYPE_SIZE getFunctionAddress(WORD functionOrdinal);// Get function address by ordinal
@@ -26,7 +26,7 @@ class CWinModuleContainerRAII : public IModuleContainerRAII {
 	HMODULE hModule;
 
 public:
-	CWinModuleContainerRAII(const LPCWSTR &modulePath);
+	CWinModuleContainerRAII(const LPCSTR &modulePath);
 	TYPE_SIZE getFunctionAddress(const LPCSTR &) override;
 	TYPE_SIZE getFunctionAddress(WORD functionOrdinal);// Get function address by ordinal
 	~CWinModuleContainerRAII() override;
@@ -39,7 +39,7 @@ public:
 	DWORD _errorCode;
 	std::string _msg;
 
-	ExWinModuleContainer(const std::string& par_msg = "");
+	ExWinModuleContainer(const std::string &par_msg = "");
 	std::string getInfo() const override;
 };
 
