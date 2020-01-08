@@ -29,7 +29,7 @@ void CJobsPlatform::addJob(const TYPE_JOBID &jobID, const TYPE_JOBMODID &jobModI
 	try {
 		this->modulesManager.loadModule(jobModID);
 	}
-	catch (const CModulesManager::ExModulesManager & e) {
+	catch (const CModulesManager::ExModulesManager &e) {
 		throw ExJobsPlatform(std::string("ModulesManager module loading failed: ") + e.getInfo());
 	}
 
@@ -125,7 +125,8 @@ void CJobsPlatform::stopJob(const TYPE_JOBID &jobID) {
 //====================================================================================================
 auto CJobsPlatform::getJobsIDs() -> std::vector<TYPE_JOBID> {
 	std::vector<decltype(this->jobsNlibs)::key_type> jobsIDs(this->jobsNlibs.size());
-	for (const auto &e : this->jobsNlibs) jobsIDs.push_back(e.first);
+	decltype(jobsIDs)::size_type i = 0;
+	for (const auto &e : this->jobsNlibs) jobsIDs[i++] = e.first;
 	return jobsIDs;
 }
 
