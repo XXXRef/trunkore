@@ -1,6 +1,8 @@
 #ifndef HEADER_JOBSPLATFORM
 #define HEADER_JOBSPLATFORM
 
+//VERSION: 1.0
+
 #include <string>
 #include <map>
 #include <utility>
