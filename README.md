@@ -14,13 +14,13 @@ Super tool to manage concurrently running tasks
 
 ## **What is it**
 Want to do many things simultaneously, but have only two arms? Dont panic, **trunkore** is exactly the thing you need now!
-Put your business logic in dynamic library and easily run it with other stuff concurrently, ofc with various abilities to state-managing such as initializing/suspending/deinitializing.
-And yeah, only in this universe, **trunkore** is not only free to use, but also opensourced. What a time to live, right? ;)
+Put your business logic in dynamic library and easily run it with other stuff concurrently, ofc with various abilities of state-managing such as initializing/suspending/deinitializing tasks.
+And yeah, only in this universe, **trunkore** is not only free to use, but also opensourced. What a place to live, right? ;)
 
 ## **How to build**
-**trunkore** uses CMake as build system.
+**trunkore** uses CMake as build system
 ```
-https://github.com/XXXRef/trunkore.git
+git clone https://github.com/XXXRef/trunkore.git
 cd trunkore
 mkdir BUILD
 cd BUILD
@@ -32,7 +32,7 @@ cmake ..
 2. You can build only **trunkore** without test job lib, just cmake the "trunkore" subfolder
 
 ## **How to use**
-**trunkore** manages jobs that are contained each in its own job library. So you need to implement your own IJobOwner class (including i_jobowner.hpp, types.hpp, utils.hpp like in Testjoblib EXT/inc folder), and override init(),play(),deinit() methods with your business logic. Build result as dynamic lib and you are ready to go.
+**trunkore** manages jobs that are contained each in its own job library. So you need to implement your own IJobOwner class (including i_jobowner.hpp, types.hpp, utils.hpp like in TestJobLib EXT/inc folder), and override {init(),play(),deinit()} methods with your business logic. Build result as dynamic lib and you are ready to go.
 
 **Commands:**
 1. Add job into **trunkore**
