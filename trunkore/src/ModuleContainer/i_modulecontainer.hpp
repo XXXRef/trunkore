@@ -15,7 +15,7 @@
 class IModuleContainer {
 public:
 	using TYPE_FUNCNAME = config::platform::TYPE_FUNCNAME;
-	using TYPE_JOBMODID = config::TYPE_JOBMODID;
+	using TYPE_JOBMODID = config::TYPE_JOBMODID;//TODO TYPE_JOBMODID -> TYPE_MODID
 
 	virtual void loadModule(const TYPE_JOBMODID &) = 0;
 	virtual void unloadModule() = 0;
